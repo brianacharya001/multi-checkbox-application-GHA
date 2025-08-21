@@ -8,7 +8,6 @@ on:
         description: 'Enter apps to deploy (comma-separated: app-1, app-2, app-3, app-4)'
         required: true
         default: 'app-1'  # default to app-1
-        type: string
 
 jobs:
   deploy:
