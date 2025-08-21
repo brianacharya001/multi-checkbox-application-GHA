@@ -1,39 +1,42 @@
+# .github/workflows/app-deploy.yml
 name: Deploy Apps
 
 on:
   workflow_dispatch:
     inputs:
-      app:
-        description: 'Select one app to run'
+      apps:
+        description: 'Enter apps to deploy (comma-separated: app-1, app-2, app-3, app-4)'
         required: true
-        default: 'app-1'
-        type: choice
-        options:
-          - app-1
-          - app-2
-          - app-3
-          - app-4
+        default: 'app-1'  # default to app-1
+        type: string
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo selected app message
+      - name: Show selected apps
+        run: echo "Selected apps: ${{ github.event.inputs.apps }}"
+
+      - name: Echo messages for selected apps
         run: |
-          case "${{ github.event.inputs.app }}" in
-            app-1)
-              echo "Hello world"
-              ;;
-            app-2)
-              echo "How are you"
-              ;;
-            app-3)
-              echo "Good day"
-              ;;
-            app-4)
-              echo "Sunny day"
-              ;;
-            *)
-              echo "Unknown app"
-              ;;
-          esac
+          IFS=',' read -ra APPS <<< "${{ github.event.inputs.apps }}"
+          for app in "${APPS[@]}"; do
+            app=$(echo "$app" | xargs)  # trim spaces
+            case "$app" in
+              app-1)
+                echo "app-1: Hello world"
+                ;;
+              app-2)
+                echo "app-2: How are you"
+                ;;
+              app-3)
+                echo "app-3: Good day"
+                ;;
+              app-4)
+                echo "app-4: Sunny day"
+                ;;
+              *)
+                echo "Unknown app: $app"
+                ;;
+            esac
+          done
