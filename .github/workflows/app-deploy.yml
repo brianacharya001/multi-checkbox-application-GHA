@@ -17,8 +17,6 @@ jobs:
         run: echo "Selected apps: ${{ github.event.inputs.apps }}"
 
       - name: Echo messages for selected apps
-        env:
-          SELECTED_APPS: ${{ github.event.inputs.apps }}
         run: |
           IFS=',' read -ra APPS <<< "$SELECTED_APPS"
           for app in "${APPS[@]}"; do
@@ -41,3 +39,5 @@ jobs:
                 ;;
             esac
           done
+        env:
+          SELECTED_APPS: ${{ github.event.inputs.apps }}
