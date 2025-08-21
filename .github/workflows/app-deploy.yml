@@ -7,7 +7,7 @@ on:
       apps:
         description: 'Enter apps to deploy (comma-separated: app-1, app-2, app-3, app-4)'
         required: true
-        default: 'app-1'  # default to app-1
+        default: 'app-1'
 
 jobs:
   deploy:
@@ -17,8 +17,10 @@ jobs:
         run: echo "Selected apps: ${{ github.event.inputs.apps }}"
 
       - name: Echo messages for selected apps
+        env:
+          SELECTED_APPS: ${{ github.event.inputs.apps }}
         run: |
-          IFS=',' read -ra APPS <<< "${{ github.event.inputs.apps }}"
+          IFS=',' read -ra APPS <<< "$SELECTED_APPS"
           for app in "${APPS[@]}"; do
             app=$(echo "$app" | xargs)  # trim spaces
             case "$app" in
