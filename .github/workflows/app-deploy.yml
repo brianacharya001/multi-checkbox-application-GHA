@@ -1,0 +1,30 @@
+# .github/workflows/app-deploy.yml
+name: Deploy Apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: 'Select apps to deploy (comma-separated: app-1, app-2, etc.)'
+        required: true
+        default: 'app-1, app-2'
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print selected apps
+        run: |
+          echo "Selected apps: ${{ github.event.inputs.apps }}"
+      
+      - name: Deploy selected apps
+        run: |
+          IFS=',' read -ra APPS <<< "${{ github.event.inputs.apps }}"
+          for app in "${APPS[@]}"; do
+            app=$(echo "$app" | xargs) # trim whitespace
+            echo "Deploying $app..."
+            # Insert your deploy command here, e.g.:
+            # ./deploy.sh "$app"
+          done
+
