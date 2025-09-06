@@ -16,6 +16,6 @@ jobs:
 
       - name: Run shell script
         run: |
-          chmod +x ./${{ matrix.applications }}.sh
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
           echo "Running ${{ matrix.applications }}.sh"
-          ./$(echo "${{ matrix.applications }}").sh
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh
