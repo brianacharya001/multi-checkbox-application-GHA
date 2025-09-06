@@ -1,4 +1,4 @@
-name: Test Matrix
+name: Test Matrix - Run Shell Scripts
 
 on:
   workflow_dispatch:
@@ -11,7 +11,11 @@ jobs:
         applications: [app-1, app-2, app-3, app-4]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Run multiple apps
-        run: echo "Running ${{ matrix.applications }}"
+      - name: Run shell script
+        run: |
+          chmod +x ./${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh"
+          ./$(echo "${{ matrix.applications }}").sh
