@@ -1,0 +1,17 @@
+name: Test Matrix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        applications: [app-1, app-2, app-3, app-4]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run multiple apps
+        run: echo "Running ${{ matrix.applications }}"
