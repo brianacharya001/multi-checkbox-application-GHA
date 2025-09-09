@@ -2,6 +2,17 @@ name: Test Matrix - Run Shell Scripts
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose the environment to run scripts against'
+        required: true
+        default: 'DEV'
+        type: choice
+        options:
+          - DEV
+          - QA
+          - PROD
+          - ALL
 
 jobs:
   test-matrix:
@@ -17,5 +28,5 @@ jobs:
       - name: Run shell script
         run: |
           chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
-          echo "Running ${{ matrix.applications }}.sh"
-          ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh for environment: ${{ inputs.environment }}"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh ${{ inputs.environment }}
