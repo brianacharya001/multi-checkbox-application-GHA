@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Choose the environment to run scripts against'
         required: true
-        default: 'DEV'
+        default: 'ALL'
         type: choice
         options:
           - DEV
@@ -17,17 +17,25 @@ on:
 jobs:
   test-matrix:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
     strategy:
       matrix:
         applications: [app-1, app-2, app-3, app-4]
+        environments: [DEV, QA, PROD]
 
+    # Skip if input is not ALL and doesn't match matrix environment
+    continue-on-error: false
     steps:
+      - name: Skip unwanted environments unless ALL is selected
+        if: ${{ inputs.environment != 'ALL' && matrix.environments != inputs.environment }}
+        run: echo "Skipping ${{ matrix.environments }} as it's not selected."
+
       - name: Checkout code
+        if: ${{ inputs.environment == 'ALL' || matrix.environments == inputs.environment }}
         uses: actions/checkout@v3
 
       - name: Run shell script
+        if: ${{ inputs.environment == 'ALL' || matrix.environments == inputs.environment }}
         run: |
           chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
-          echo "Running ${{ matrix.applications }}.sh for environment: ${{ inputs.environment }}"
-          ./${{ matrix.applications }}/${{ matrix.applications }}.sh ${{ inputs.environment }}
+          echo "Running ${{ matrix.applications }}.sh for environment: ${{ matrix.environments }}"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh ${{ matrix.environments }}
