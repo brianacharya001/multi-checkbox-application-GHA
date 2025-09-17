@@ -1,0 +1,295 @@
+name: Test Matrix - Run Shell Scripts with choice
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose the environment to run scripts against'
+        required: true
+        default: 'ALL'
+        type: choice
+        options:
+          - DEV
+          - QA
+          - PROD
+          - ALL
+
+jobs:
+
+  run-dev:
+    if: ${{ inputs.environment == 'DEV' || inputs.environment == 'ALL' }}
+    name: Run Scripts in DEV
+    runs-on: ubuntu-latest
+    environment: DEV
+    strategy:
+      matrix:
+        applications: [app-1, app-2, app-3, app-4]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in DEV
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in DEV"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh DEV
+  run-qa:
+    if: ${{ inputs.environment == 'QA' || inputs.environment == 'ALL' }}
+    name: Run Scripts in QA
+    runs-on: ubuntu-latest
+    environment: QA
+    strategy:
+      matrix:
+        applications: [app-1, app-2, app-3, app-4]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in QA
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in QA"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh QA
+  run-prod:
+    if: ${{ inputs.environment == 'PROD' || inputs.environment == 'ALL' }}
+    name: Run Scripts in PROD
+    runs-on: ubuntu-latest
+    environment: PROD
+    strategy:
+      matrix:
+        applications: [app-1, app-2, app-3, app-4]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in PROD
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in PROD"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh PROD
+Update matrix.node.yml · brianacharya001/multi-checkbox-application-GHA@0c17283
+ChatGPT said:
+
+It looks like you want to modify the GitHub Actions workflow to accept input like app-1, app-2, etc. in the matrix strategy. To achieve this, we need to dynamically pass the application names via inputs, rather than hardcoding them.
+
+Here's the modified code where you can pass the input applications (like app-1, app-2, etc.) through the workflow_dispatch event:
+
+name: Test Matrix - Run Shell Scripts
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose the environment to run scripts against'
+        required: true
+        default: 'ALL'
+        type: choice
+        options:
+          - DEV
+          - QA
+          - PROD
+          - ALL
+      applications:
+        description: 'Comma separated list of applications (e.g., app-1, app-2)'
+        required: true
+        default: 'app-1,app-2,app-3,app-4'
+        type: string
+
+jobs:
+
+  run-dev:
+    if: ${{ inputs.environment == 'DEV' || inputs.environment == 'ALL' }}
+    name: Run Scripts in DEV
+    runs-on: ubuntu-latest
+    environment: DEV
+    strategy:
+      matrix:
+        applications: ${{ fromJson('["' + inputs.applications + '"]') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in DEV
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in DEV"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh DEV
+
+  run-qa:
+    if: ${{ inputs.environment == 'QA' || inputs.environment == 'ALL' }}
+    name: Run Scripts in QA
+    runs-on: ubuntu-latest
+    environment: QA
+    strategy:
+      matrix:
+        applications: ${{ fromJson('["' + inputs.applications + '"]') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in QA
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in QA"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh QA
+
+  run-prod:
+    if: ${{ inputs.environment == 'PROD' || inputs.environment == 'ALL' }}
+    name: Run Scripts in PROD
+    runs-on: ubuntu-latest
+    environment: PROD
+    strategy:
+      matrix:
+        applications: ${{ fromJson('["' + inputs.applications + '"]') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in PROD
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in PROD"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh PROD
+
+Key Changes:
+
+    Inputs for applications:
+
+        In the workflow_dispatch section, I added an input field applications, where you can pass a comma-separated list of application names (e.g., app-1,app-2,app-3).
+
+    Dynamic Matrix:
+
+        The matrix.applications is now set dynamically using fromJson('["' + inputs.applications + '"]') to convert the comma-separated string into an array.
+
+How it works:
+
+    When triggering the workflow, you can input the applications (e.g., app-1, app-2, app-3) and the matrix will run each script for the specified applications.
+
+Let me know if you need any more modifications or clarifications!
+You said:
+modify all app as defult and other as choice input
+ChatGPT said:
+
+If you want to have the default applications (app-1, app-2, app-3, app-4) preselected, but allow the user to choose additional or different applications via a choice input, you can adjust the workflow_dispatch section to allow for both default and user-defined values.
+
+Here’s how you can modify your GitHub Actions workflow:
+Key Changes:
+
+    Default Applications: app-1, app-2, app-3, app-4 will be the default choices.
+
+    Additional Input: Users can add extra applications as an optional input.
+
+The modified workflow will look like this:
+
+name: Test Matrix - Run Shell Scripts
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose the environment to run scripts against'
+        required: true
+        default: 'ALL'
+        type: choice
+        options:
+          - DEV
+          - QA
+          - PROD
+          - ALL
+      applications:
+        description: 'Choose applications to run scripts for'
+        required: false
+        type: choice
+        options:
+          - app-1
+          - app-2
+          - app-3
+          - app-4
+          - other
+        default: 'app-1,app-2,app-3,app-4'
+      other-applications:
+        description: 'Comma separated list of other applications (optional)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+
+  run-dev:
+    if: ${{ inputs.environment == 'DEV' || inputs.environment == 'ALL' }}
+    name: Run Scripts in DEV
+    runs-on: ubuntu-latest
+    environment: DEV
+    strategy:
+      matrix:
+        applications: ${{ fromJson('["' + (inputs.applications != 'other' && inputs.applications || inputs.other-applications) + '"]') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in DEV
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in DEV"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh DEV
+
+  run-qa:
+    if: ${{ inputs.environment == 'QA' || inputs.environment == 'ALL' }}
+    name: Run Scripts in QA
+    runs-on: ubuntu-latest
+    environment: QA
+    strategy:
+      matrix:
+        applications: ${{ fromJson('["' + (inputs.applications != 'other' && inputs.applications || inputs.other-applications) + '"]') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in QA
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in QA"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh QA
+
+  run-prod:
+    if: ${{ inputs.environment == 'PROD' || inputs.environment == 'ALL' }}
+    name: Run Scripts in PROD
+    runs-on: ubuntu-latest
+    environment: PROD
+    strategy:
+      matrix:
+        applications: ${{ fromJson('["' + (inputs.applications != 'other' && inputs.applications || inputs.other-applications) + '"]') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script in PROD
+        run: |
+          chmod +x ./${{ matrix.applications }}/${{ matrix.applications }}.sh
+          echo "Running ${{ matrix.applications }}.sh in PROD"
+          ./${{ matrix.applications }}/${{ matrix.applications }}.sh PROD
+
+Key Changes Explained:
+
+    applications Input: The user can select from default options (app-1, app-2, app-3, app-4) or choose other.
+
+    other-applications Input: If other is selected, the user can input a custom list of applications, separated by commas (e.g., app-5,app-6).
+
+    Matrix Logic:
+
+        If the user selects one of the default options, only that application is passed to the matrix.
+
+        If the user selects other, the list of applications from the other-applications input is used, or the default list is used if the input is empty.
+
+Workflow Behavior:
+
+    By Default: The script will run for app-1, app-2, app-3, and app-4.
+
+    If 'Other' is Selected: The user can specify additional or different application names, and the matrix will be populated with those.
+
+This should give you the flexibility of a default selection while also allowing custom inputs when necessary.
+
+Let me know if you'd like any further adjustments or explanations!
+
+
+ChatGPT can make mistakes. Check important info.
