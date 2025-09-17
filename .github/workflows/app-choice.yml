@@ -39,7 +39,13 @@ jobs:
     environment: DEV
     strategy:
       matrix:
-        applications:  ${{ fromJson('["' + (inputs.applications != 'other' && inputs.applications || inputs.other-applications) + '"]') }}
+        applications: ${{ 
+          fromJson(
+            inputs.applications == 'other' && inputs.other-applications != '' 
+            ? '[' + inputs.other-applications + ']' 
+            : '["app-1", "app-2", "app-3", "app-4"]'
+          )
+        }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -57,7 +63,13 @@ jobs:
     environment: QA
     strategy:
       matrix:
-        applications: ${{ fromJson('["' + (inputs.applications != 'other' && inputs.applications || inputs.other-applications) + '"]') }}
+        applications: ${{ 
+          fromJson(
+            inputs.applications == 'other' && inputs.other-applications != '' 
+            ? '[' + inputs.other-applications + ']' 
+            : '["app-1", "app-2", "app-3", "app-4"]'
+          )
+        }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -75,7 +87,13 @@ jobs:
     environment: PROD
     strategy:
       matrix:
-        applications: ${{ fromJson('["' + (inputs.applications != 'other' && inputs.applications || inputs.other-applications) + '"]') }}
+        applications: ${{ 
+          fromJson(
+            inputs.applications == 'other' && inputs.other-applications != '' 
+            ? '[' + inputs.other-applications + ']' 
+            : '["app-1", "app-2", "app-3", "app-4"]'
+          )
+        }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
