@@ -40,11 +40,9 @@ jobs:
     strategy:
       matrix:
         applications: ${{ 
-          fromJson(
-            inputs.applications == 'other' && inputs.other-applications != '' 
-            ? '[' + inputs.other-applications + ']' 
-            : '["app-1", "app-2", "app-3", "app-4"]'
-          )
+          inputs.applications == 'other' && inputs.other-applications != '' 
+            ? fromJson('["' + inputs.other-applications.replace(',', '","') + '"]')
+            : fromJson('["app-1", "app-2", "app-3", "app-4"]')
         }}
     steps:
       - name: Checkout code
@@ -64,11 +62,9 @@ jobs:
     strategy:
       matrix:
         applications: ${{ 
-          fromJson(
-            inputs.applications == 'other' && inputs.other-applications != '' 
-            ? '[' + inputs.other-applications + ']' 
-            : '["app-1", "app-2", "app-3", "app-4"]'
-          )
+          inputs.applications == 'other' && inputs.other-applications != '' 
+            ? fromJson('["' + inputs.other-applications.replace(',', '","') + '"]')
+            : fromJson('["app-1", "app-2", "app-3", "app-4"]')
         }}
     steps:
       - name: Checkout code
@@ -88,11 +84,9 @@ jobs:
     strategy:
       matrix:
         applications: ${{ 
-          fromJson(
-            inputs.applications == 'other' && inputs.other-applications != '' 
-            ? '[' + inputs.other-applications + ']' 
-            : '["app-1", "app-2", "app-3", "app-4"]'
-          )
+          inputs.applications == 'other' && inputs.other-applications != '' 
+            ? fromJson('["' + inputs.other-applications.replace(',', '","') + '"]')
+            : fromJson('["app-1", "app-2", "app-3", "app-4"]')
         }}
     steps:
       - name: Checkout code
